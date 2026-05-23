@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Ордак Есеп</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--tg-theme-bg-color,#f5f5f0);color:var(--tg-theme-text-color,#1a1a1a);min-height:100vh;font-size:15px;}
+.app{max-width:430px;margin:0 auto;padding:0 0 80px;}
+.header{text-align:center;padding:1.2rem 1rem 0.4rem;}
+.header h1{font-size:19px;font-weight:700;}
+.header p{font-size:12px;color:#888;margin-top:3px;}
+.tab-bar{position:sticky;top:0;z-index:50;display:flex;gap:4px;background:#e8e8e2;padding:4px;margin:0.8rem 1rem;border-radius:14px;}
+.tab{flex:1;padding:7px 4px;border:none;background:transparent;border-radius:10px;font-size:12px;color:#666;cursor:pointer;font-family:inherit;transition:all 0.15s;}
+.tab.active{background:white;color:#1a1a1a;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,0.1);}
+.screen{display:none;padding:0 1rem;}
+.screen.active{display:block;}
+
+.notif{padding:10px 16px;border-radius:12px;font-size:13px;margin:0 1rem 10px;display:none;line-height:1.5;}
+.notif.show{display:block;}
+.notif.ok{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;}
+.notif.err{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;}
+
+.sec-title{font-size:11px;font-weight:600;color:#aaa;letter-spacing:0.5px;text-transform:uppercase;margin:14px 0 8px;}
+
+.p-card{background:white;border:1px solid #e8e8e2;border-radius:18px;margin-bottom:14px;overflow:hidden;}
+.p-head{display:flex;align-items:center;gap:12px;padding:14px 16px 12px;}
+.av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
+.av-a{background:#dbeafe;color:#1e40af;}
+.av-u{background:#d1fae5;color:#065f46;}
+.av-r{background:#ede9fe;color:#5b21b6;}
+.p-name{font-size:15px;font-weight:700;}
+.p-net{font-size:12px;margin-top:2px;}
+.p-net.red{color:#dc2626;}
+.p-net.green{color:#059669;}
+.p-net.gray{color:#aaa;}
+
+.card-section{padding:10px 16px;}
+.card-section+.card-section{border-top:1px solid #f0f0ea;}
+.cs-label{font-size:10px;font-weight:600;letter-spacing:0.4px;color:#bbb;text-transform:uppercase;margin-bottom:6px;}
+
+.d-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;gap:8px;}
+.d-who{display:flex;align-items:center;gap:6px;font-size:13px;color:#333;}
+.av-sm{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.d-right{display:flex;gap:8px;align-items:center;flex-shrink:0;}
+.d-amt{font-size:13px;font-weight:600;}
+.d-amt.red{color:#dc2626;}
+.d-amt.green{color:#059669;}
+.d-amt.gray{color:#ccc;}
+.pay-btn{font-size:11px;padding:4px 9px;border:1px solid #e0e0da;border-radius:8px;background:transparent;cursor:pointer;font-family:inherit;color:#555;}
+.pay-btn:hover{background:#f5f5f0;}
+
+.card-footer{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#fafaf8;border-top:1px solid #f0f0ea;}
+.cf-label{font-size:12px;color:#888;}
+.cf-total{font-size:15px;font-weight:700;}
+.cf-total.red{color:#dc2626;}
+.cf-total.green{color:#059669;}
+.cf-total.gray{color:#aaa;}
+
+.exp-item{background:white;border:1px solid #e8e8e2;border-radius:14px;padding:12px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+.exp-desc{font-size:14px;font-weight:600;}
+.exp-meta{font-size:12px;color:#888;margin-top:2px;}
+.exp-right{text-align:right;flex-shrink:0;}
+.exp-amt{font-size:15px;font-weight:700;}
+.exp-per{font-size:12px;color:#888;}
+.exp-tag{font-size:11px;padding:2px 8px;border-radius:20px;margin-top:4px;display:inline-block;}
+.tag-open{background:#fef3c7;color:#92400e;}
+.tag-closed{background:#d1fae5;color:#065f46;}
+.tag-manual{background:#ede9fe;color:#5b21b6;}
+
+.form-card{background:white;border:1px solid #e8e8e2;border-radius:16px;padding:16px;}
+.f-label{font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:5px;margin-top:14px;}
+.f-label:first-child{margin-top:0;}
+input,select{width:100%;padding:10px 12px;border:1px solid #e0e0da;border-radius:10px;font-size:14px;font-family:inherit;background:white;color:#1a1a1a;}
+input:focus,select:focus{outline:none;border-color:#a78bfa;}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+.chip{padding:6px 14px;border-radius:20px;border:1.5px solid #e0e0da;background:transparent;font-size:13px;color:#555;cursor:pointer;font-family:inherit;transition:all 0.15s;}
+.chip.on{background:#059669;border-color:#059669;color:white;font-weight:600;}
+.preview{margin-top:10px;padding:10px 12px;background:#f5f5f0;border-radius:10px;font-size:13px;color:#555;min-height:38px;line-height:1.5;}
+.big-btn{width:100%;padding:13px;border:none;background:#059669;color:white;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;margin-top:14px;font-family:inherit;}
+.big-btn.purple{background:#7c3aed;}
+
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);align-items:flex-end;justify-content:center;z-index:200;padding:1rem;}
+.modal-bg.open{display:flex;}
+.modal{background:white;border-radius:20px 20px 16px 16px;padding:1.5rem;width:100%;max-width:430px;}
+.modal h3{font-size:16px;font-weight:700;margin-bottom:12px;}
+.m-info{display:flex;align-items:center;gap:10px;padding:12px;background:#f5f5f0;border-radius:12px;margin-bottom:12px;}
+.m-question{font-size:13px;color:#666;margin-bottom:16px;}
+.m-btn-ok{width:100%;padding:13px;border:none;background:#059669;color:white;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;}
+.m-btn-no{width:100%;padding:12px;border:1px solid #e0e0da;background:transparent;color:#666;border-radius:12px;font-size:14px;cursor:pointer;font-family:inherit;margin-top:8px;}
+.closed-pill{font-size:12px;color:#059669;background:#d1fae5;padding:3px 10px;border-radius:20px;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <h1>Ордак Есеп 💸</h1>
+    <p id="user-name">Ардақ · Ақбота · Ұлболсын</p>
+  </div>
+
+  <div id="notif" class="notif"></div>
+
+  <div class="tab-bar">
+    <button class="tab active" onclick="tab('balance',this)">Баланс</button>
+    <button class="tab" onclick="tab('history',this)">Тарих</button>
+    <button class="tab" onclick="tab('add',this)">+ Шығын</button>
+    <button class="tab" onclick="tab('manual',this)">Қарыз</button>
+  </div>
+
+  <!-- БАЛАНС -->
+  <div id="screen-balance" class="screen active">
+    <div class="sec-title">Жеке баланс</div>
+
+    <!-- Ақбота -->
+    <div class="p-card">
+      <div class="p-head">
+        <div class="av av-a">АБ</div>
+        <div>
+          <div class="p-name">Ақбота</div>
+          <div class="p-net red" id="net-a">−6 667 ₸ қарыз</div>
+        </div>
+      </div>
+      <div class="card-section">
+        <div class="cs-label">Кімге қарыз →</div>
+        <div class="d-row" id="a-to-r">
+          <span class="d-who"><span class="av-sm av-r">АР</span> Ардақ <span style="font-size:11px;color:#aaa;">(азық-түлік)</span></span>
+          <div class="d-right">
+            <span class="d-amt red">6 667 ₸</span>
+            <button class="pay-btn" onclick="openPay('Ақбота','Ардақ',6667,'a')">Аудардым ✓</button>
+          </div>
+        </div>
+        <div class="d-row">
+          <span class="d-who"><span class="av-sm av-u">ҰЛ</span> Ұлболсын</span>
+          <div class="d-right"><span class="d-amt gray">—</span></div>
+        </div>
+      </div>
+      <div class="card-section">
+        <div class="cs-label">Кім қарыз ←</div>
+        <div class="d-row">
+          <span class="d-who"><span class="av-sm av-u">ҰЛ</span> Ұлболсын</span>
+          <div class="d-right"><span class="d-amt gray">—</span></div>
+        </div>
+        <div class="d-row">
+          <span class="d-who"><span class="av-sm av-r">АР</span> Ардақ</span>
+          <div class="d-right"><span class="d-amt gray">—</span></div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="cf-label">Нетто</span>
+        <span class="cf-total red" id="total-a">−6 667 ₸</span>
+      </div>
+    </div>
+
+    <!-- Ұлболсын -->
+    <div class="p-card">
+      <div class="p-head">
+        <div class="av av-u">ҰЛ</div>
+        <div>
+          <div class="p-name">Ұлболсын</div>
+          <div class="p-net red" id="net-u">−6 667 ₸ қарыз</div>
+        </div>
+      </div>
+      <div class="card-section">
+        <div class="cs-label">Кімге қарыз →</div>
+        <div class="d-row" id="u-to-r">
+          <span class="d-who"><span class="av-sm av-r">АР</span> Ардақ <span style="font-size:11px;color:#aaa;">(азық-түлік)</span></span>
+          <div class="d-right">
+            <span class="d-amt red">6 667 ₸</span>
+            <button class="pay-btn" onclick="openPay('Ұлболсын','Ардақ',6667,'u')">Аудардым ✓</button>
+          </div>
+        </div>
+        <div class="d-row">
+          <span class="d-who"><span class="av-sm av-a">АБ</span> Ақбота</span>
+          <div class="d-right"><span class="d-amt gray">—</span></div>
+        </div>
+      </div>
+      <div class="card-section">
+        <div class="cs-label">Кім қарыз ←</div>
+        <div class="d-row">
+          <span class="d-who"><span class="av-sm av-a">АБ</span> Ақбота</span>
+          <div class="d-right"><span class="d-amt gray">—</span></div>
+        </div>
+        <div class="d-row">
+          <span class="d-who"><span class="av-sm av-r">АР</span> Ардақ</span>
+          <div class="d-right"><span class="d-amt gray">—</span></div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="cf-label">Нетто</span>
+        <span class="cf-total red" id="total-u">−6 667 ₸</span>
+      </div>
+    </div>
+
+    <!-- Ардақ -->
+    <div class="p-card">
+      <div class="p-head">
+        <div class="av av-r">АР</div>
+        <div>
+          <div class="p-name">Ардақ</div>
+          <div class="p-net green" id="net-r">+13 334 ₸ алуы керек</div>
+        </div>
+      </div>
+      <div class="card-section">
+        <div class="cs-label">Кімге қарыз →</div>
+        <div class="d-row">
+          <span class="d-who"><span class="av-sm av-a">АБ</span> Ақбота</span>
+          <div class="d-right"><span class="d-amt gray">—</span></div>
+        </div>
+        <div class="d-row">
+          <span class="d-who"><span class="av-sm av-u">ҰЛ</span> Ұлболсын</span>
+          <div class="d-right"><span class="d-amt gray">—</span></div>
+        </div>
+      </div>
+      <div class="card-section">
+        <div class="cs-label">Кім қарыз ←</div>
+        <div class="d-row">
+          <span class="d-who"><span class="av-sm av-a">АБ</span> Ақбота <span style="font-size:11px;color:#aaa;">(азық-түлік)</span></span>
+          <div class="d-right"><span class="d-amt green">6 667 ₸</span></div>
+        </div>
+        <div class="d-row">
+          <span class="d-who"><span class="av-sm av-u">ҰЛ</span> Ұлболсын <span style="font-size:11px;color:#aaa;">(азық-түлік)</span></span>
+          <div class="d-right"><span class="d-amt green">6 667 ₸</span></div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="cf-label">Нетто</span>
+        <span class="cf-total green" id="total-r">+13 334 ₸</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ТАРИХ -->
+  <div id="screen-history" class="screen">
+    <div class="sec-title">Барлық шығындар</div>
+    <div class="exp-item">
+      <div><div class="exp-desc">Азық-түлік</div><div class="exp-meta">Ардақ · 24 мамыр 2026</div></div>
+      <div class="exp-right"><div class="exp-amt">20 000 ₸</div><div class="exp-per">÷3 · 6 667 ₸-тан</div><span class="exp-tag tag-open">ашық</span></div>
+    </div>
+    <div class="exp-item">
+      <div><div class="exp-desc">Тұрмыстық химия</div><div class="exp-meta">Ақбота · 22 мамыр 2026</div></div>
+      <div class="exp-right"><div class="exp-amt">8 500 ₸</div><div class="exp-per">÷2 · 4 250 ₸-тан</div><span class="exp-tag tag-open">ашық</span></div>
+    </div>
+    <div class="exp-item" style="opacity:0.55;">
+      <div><div class="exp-desc">Кешкі ас</div><div class="exp-meta">Ұлболсын · 20 мамыр 2026</div></div>
+      <div class="exp-right"><div class="exp-amt">12 000 ₸</div><div class="exp-per">÷3 · 4 000 ₸-тан</div><span class="exp-tag tag-closed">жабылды ✓</span></div>
+    </div>
+    <div class="exp-item">
+      <div><div class="exp-desc">Ұлболсын ← Ақбота</div><div class="exp-meta">Қолмен · 18 мамыр 2026</div></div>
+      <div class="exp-right"><div class="exp-amt">5 000 ₸</div><div class="exp-per">тікелей қарыз</div><span class="exp-tag tag-manual">қолмен</span></div>
+    </div>
+  </div>
+
+  <!-- ШЫҒЫН ҚОСУ -->
+  <div id="screen-add" class="screen">
+    <div class="sec-title">Жаңа шығын</div>
+    <div class="form-card">
+      <label class="f-label">Кім төледі</label>
+      <select id="payer"><option>Ардақ</option><option>Ақбота</option><option>Ұлболсын</option></select>
+      <label class="f-label">Не үшін</label>
+      <input type="text" id="desc" placeholder="Азық-түлік, кешкі ас..." />
+      <label class="f-label">Сумма (₸)</label>
+      <input type="number" id="amount" placeholder="15 000" oninput="calcPreview()" />
+      <label class="f-label">Кім қатысады</label>
+      <div class="chips">
+        <button class="chip on" onclick="toggleChip(this)">Ардақ</button>
+        <button class="chip on" onclick="toggleChip(this)">Ақбота</button>
+        <button class="chip on" onclick="toggleChip(this)">Ұлболсын</button>
+      </div>
+      <div class="preview" id="preview">Қатысушыларды таңда және сумманы енгіз</div>
+      <button class="big-btn" onclick="addExp()">Шығын қосу</button>
+    </div>
+  </div>
+
+  <!-- ҚОЛМЕН ҚАРЫЗ -->
+  <div id="screen-manual" class="screen">
+    <div class="sec-title">Қолмен қарыз жазу</div>
+    <div class="form-card">
+      <p style="font-size:13px;color:#666;margin-bottom:14px;line-height:1.6;">Мысалы: Ақбота Ұлболсынға 5 000 ₸ берді. Бөлусіз тікелей жазба.</p>
+      <label class="f-label">Кім берді / кім төледі</label>
+      <select id="m-from"><option>Ақбота</option><option>Ұлболсын</option><option>Ардақ</option></select>
+      <label class="f-label">Кімге қарыз</label>
+      <select id="m-to"><option>Ұлболсын</option><option>Ардақ</option><option>Ақбота</option></select>
+      <label class="f-label">Сумма (₸)</label>
+      <input type="number" id="m-amount" placeholder="5 000" />
+      <label class="f-label">Сипаттама</label>
+      <input type="text" id="m-desc" placeholder="Несие, дүкен..." />
+      <button class="big-btn purple" onclick="addManual()">Қарыз жазу</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="pay-modal">
+  <div class="modal">
+    <h3>Аударымды растау</h3>
+    <div class="m-info">
+      <span style="font-size:22px;color:#059669;">→</span>
+      <span id="pay-text" style="font-size:14px;"></span>
+    </div>
+    <p class="m-question" id="pay-q"></p>
+    <button class="m-btn-ok" onclick="confirmPay(true)">✓ Иә, алдым!</button>
+    <button class="m-btn-no" onclick="confirmPay(false)">Жоқ, алмадым</button>
+  </div>
+</div>
+
+<script>
+let curPay = {};
+const tg = window.Telegram && window.Telegram.WebApp;
+if (tg) {
+  tg.ready();
+  tg.expand();
+  const u = tg.initDataUnsafe && tg.initDataUnsafe.user;
+  if (u) document.getElementById('user-name').textContent = u.first_name + ' — Ордак Есеп';
+}
+
+function tab(name, btn) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+function toggleChip(el) { el.classList.toggle('on'); calcPreview(); }
+
+function calcPreview() {
+  const amt = parseFloat(document.getElementById('amount').value) || 0;
+  const sel = [...document.querySelectorAll('.chip.on')].map(c => c.textContent);
+  const el = document.getElementById('preview');
+  if (amt > 0 && sel.length > 0) {
+    const share = Math.round(amt / sel.length);
+    el.innerHTML = '<strong>' + amt.toLocaleString('ru') + ' ₸</strong> ÷ ' + sel.length + ' = <strong>' + share.toLocaleString('ru') + ' ₸</strong> әрқайсысынан<br><span style="color:#888;font-size:12px;">' + sel.join(', ') + '</span>';
+  } else {
+    el.textContent = 'Қатысушыларды таңда және сумманы енгіз';
+  }
+}
+
+function addExp() {
+  const desc = document.getElementById('desc').value.trim();
+  const amt = parseFloat(document.getElementById('amount').value);
+  const payer = document.getElementById('payer').value;
+  const sel = [...document.querySelectorAll('.chip.on')];
+  if (!desc || !amt) { note('Барлық өрістерді толтыр', false); return; }
+  if (!sel.length) { note('Кем дегенде бір қатысушы таңда', false); return; }
+  const share = Math.round(amt / sel.length);
+  if (tg) tg.sendData(JSON.stringify({type:'expense', payer, desc, amount:amt, participants: sel.map(c=>c.textContent)}));
+  note(payer + ' ' + amt.toLocaleString('ru') + ' ₸ жұмсады — «' + desc + '». Әрқайсысынан ' + share.toLocaleString('ru') + ' ₸.', true);
+  document.getElementById('desc').value = '';
+  document.getElementById('amount').value = '';
+  document.getElementById('preview').textContent = 'Қатысушыларды таңда және сумманы енгіз';
+  tab('balance', document.querySelector('.tab'));
+}
+
+function addManual() {
+  const from = document.getElementById('m-from').value;
+  const to = document.getElementById('m-to').value;
+  const amt = parseFloat(document.getElementById('m-amount').value);
+  const desc = document.getElementById('m-desc').value.trim();
+  if (from === to) { note('Екі түрлі адам таңда', false); return; }
+  if (!amt) { note('Сумманы енгіз', false); return; }
+  if (tg) tg.sendData(JSON.stringify({type:'manual', from, to, amount:amt, desc}));
+  note(to + ' ' + from + '-ға ' + amt.toLocaleString('ru') + ' ₸ қарыз' + (desc ? ' — ' + desc : ''), true);
+  document.getElementById('m-amount').value = '';
+  document.getElementById('m-desc').value = '';
+  tab('balance', document.querySelector('.tab'));
+}
+
+function openPay(from, to, amt, key) {
+  curPay = {from, to, amt, key};
+  document.getElementById('pay-text').textContent = from + ' ' + to + '-қа ' + amt.toLocaleString('ru') + ' ₸ аударды';
+  document.getElementById('pay-q').textContent = to + ', ақшаны алдың ба?';
+  document.getElementById('pay-modal').classList.add('open');
+}
+
+function confirmPay(yes) {
+  document.getElementById('pay-modal').classList.remove('open');
+  if (yes) {
+    if (tg) tg.sendData(JSON.stringify({type:'confirm_pay', from:curPay.from, to:curPay.to, amount:curPay.amt}));
+    note(curPay.to + ' ' + curPay.amt.toLocaleString('ru') + ' ₸ алғанын растады. Қарыз жабылды! 🎉', true);
+    const k = curPay.key;
+    document.getElementById('net-'+k).textContent = 'Теңестірілді ✓';
+    document.getElementById('net-'+k).className = 'p-net gray';
+    document.getElementById('total-'+k).textContent = '0 ₸';
+    document.getElementById('total-'+k).className = 'cf-total gray';
+  } else {
+    note('Аударым расталмады. ' + curPay.to + '-мен сөйлес.', false);
+  }
+}
+
+function note(text, ok) {
+  const n = document.getElementById('notif');
+  n.textContent = text;
+  n.className = 'notif show ' + (ok ? 'ok' : 'err');
+  setTimeout(() => n.classList.remove('show'), 5000);
+}
+
+document.getElementById('pay-modal').addEventListener('click', e => {
+  if (e.target.id === 'pay-modal') e.target.classList.remove('open');
+});
+</script>
+</body>
+</html>
