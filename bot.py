@@ -499,3 +499,41 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+async def run_async():
+    """Run bot asynchronously for use with threading"""
+    application = Application.builder().token(TOKEN).build()
+
+    add_conv = ConversationHandler(
+        entry_points=[CommandHandler("add", add_start)],
+        states={
+            AMOUNT:      [MessageHandler(filters.TEXT & ~filters.COMMAND, add_amount)],
+            DESCRIPTION: [MessageHandler(filters.TEXT & ~filters.COMMAND, add_description)],
+            SPLIT:       [CallbackQueryHandler(add_split, pattern="^split_|^cancel$")],
+        },
+        fallbacks=[CommandHandler("cancel", cancel)],
+    )
+    pay_conv = ConversationHandler(
+        entry_points=[CommandHandler("pay", pay_start)],
+        states={
+            CONFIRM_PAYMENT: [CallbackQueryHandler(pay_confirm, pattern="^paid_|^cancel_pay$")],
+        },
+        fallbacks=[CommandHandler("cancel", cancel)],
+    )
+
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("balance", balance_cmd))
+    application.add_handler(CommandHandler("history", history_cmd))
+    application.add_handler(add_conv)
+    application.add_handler(pay_conv)
+    application.add_handler(CallbackQueryHandler(handle_payment_response, pattern="^confirm_|^deny_"))
+    application.add_handler(CallbackQueryHandler(menu_callback, pattern="^menu_"))
+    application.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, webapp_data))
+
+    async with application:
+        await application.start()
+        await application.updater.start_polling()
+        # Keep running
+        import asyncio
+        while True:
+            await asyncio.sleep(3600)
