@@ -7,7 +7,7 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--tg-theme-bg-color,#f5f5f0);color:var(--tg-theme-text-color,#1a1a1a);min-height:100vh;font-size:15px;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh;}
 .app{max-width:430px;margin:0 auto;padding:0 0 80px;}
 .header{text-align:center;padding:1.2rem 1rem 0.4rem;}
 .header h1{font-size:19px;font-weight:700;}
@@ -33,9 +33,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .av-r{background:#ede9fe;color:#5b21b6;}
 .p-name{font-size:15px;font-weight:700;}
 .p-net{font-size:12px;margin-top:2px;}
-.p-net.red{color:#dc2626;}
-.p-net.green{color:#059669;}
-.p-net.gray{color:#aaa;}
+.p-net.red{color:#dc2626;} .p-net.green{color:#059669;} .p-net.gray{color:#aaa;}
 
 .card-section{padding:10px 16px;}
 .card-section+.card-section{border-top:1px solid #f0f0ea;}
@@ -46,18 +44,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .av-sm{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
 .d-right{display:flex;gap:8px;align-items:center;flex-shrink:0;}
 .d-amt{font-size:13px;font-weight:600;}
-.d-amt.red{color:#dc2626;}
-.d-amt.green{color:#059669;}
-.d-amt.gray{color:#ccc;}
+.d-amt.red{color:#dc2626;} .d-amt.green{color:#059669;} .d-amt.gray{color:#ccc;}
 .pay-btn{font-size:11px;padding:4px 9px;border:1px solid #e0e0da;border-radius:8px;background:transparent;cursor:pointer;font-family:inherit;color:#555;}
 .pay-btn:hover{background:#f5f5f0;}
 
 .card-footer{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#fafaf8;border-top:1px solid #f0f0ea;}
 .cf-label{font-size:12px;color:#888;}
 .cf-total{font-size:15px;font-weight:700;}
-.cf-total.red{color:#dc2626;}
-.cf-total.green{color:#059669;}
-.cf-total.gray{color:#aaa;}
+.cf-total.red{color:#dc2626;} .cf-total.green{color:#059669;} .cf-total.gray{color:#aaa;}
 
 .exp-item{background:white;border:1px solid #e8e8e2;border-radius:14px;padding:12px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
 .exp-desc{font-size:14px;font-weight:600;}
@@ -69,6 +63,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tag-open{background:#fef3c7;color:#92400e;}
 .tag-closed{background:#d1fae5;color:#065f46;}
 .tag-manual{background:#ede9fe;color:#5b21b6;}
+.tag-pay{background:#e0f2fe;color:#0369a1;}
 
 .form-card{background:white;border:1px solid #e8e8e2;border-radius:16px;padding:16px;}
 .f-label{font-size:12px;font-weight:600;color:#555;display:block;margin-bottom:5px;margin-top:14px;}
@@ -81,6 +76,7 @@ input:focus,select:focus{outline:none;border-color:#a78bfa;}
 .preview{margin-top:10px;padding:10px 12px;background:#f5f5f0;border-radius:10px;font-size:13px;color:#555;min-height:38px;line-height:1.5;}
 .big-btn{width:100%;padding:13px;border:none;background:#059669;color:white;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;margin-top:14px;font-family:inherit;}
 .big-btn.purple{background:#7c3aed;}
+.big-btn:disabled{background:#ccc;cursor:not-allowed;}
 
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);align-items:flex-end;justify-content:center;z-index:200;padding:1rem;}
 .modal-bg.open{display:flex;}
@@ -90,174 +86,42 @@ input:focus,select:focus{outline:none;border-color:#a78bfa;}
 .m-question{font-size:13px;color:#666;margin-bottom:16px;}
 .m-btn-ok{width:100%;padding:13px;border:none;background:#059669;color:white;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;}
 .m-btn-no{width:100%;padding:12px;border:1px solid #e0e0da;background:transparent;color:#666;border-radius:12px;font-size:14px;cursor:pointer;font-family:inherit;margin-top:8px;}
-.closed-pill{font-size:12px;color:#059669;background:#d1fae5;padding:3px 10px;border-radius:20px;}
+
+.loading{text-align:center;padding:2rem;color:#aaa;font-size:14px;}
+.empty{text-align:center;padding:2rem;color:#aaa;font-size:14px;}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="header">
     <h1>Ордак Есеп 💸</h1>
-    <p id="user-name">Ардақ · Ақбота · Ұлболсын</p>
+    <p>Ардақ · Ақбота · Ұлболсын</p>
   </div>
 
   <div id="notif" class="notif"></div>
 
   <div class="tab-bar">
-    <button class="tab active" onclick="tab('balance',this)">Баланс</button>
-    <button class="tab" onclick="tab('history',this)">Тарих</button>
-    <button class="tab" onclick="tab('add',this)">+ Шығын</button>
-    <button class="tab" onclick="tab('manual',this)">Қарыз</button>
+    <button class="tab active" onclick="switchTab('balance',this)">Баланс</button>
+    <button class="tab" onclick="switchTab('history',this)">Тарих</button>
+    <button class="tab" onclick="switchTab('add',this)">+ Шығын</button>
+    <button class="tab" onclick="switchTab('manual',this)">Қарыз</button>
   </div>
 
-  <!-- БАЛАНС -->
   <div id="screen-balance" class="screen active">
-    <div class="sec-title">Жеке баланс</div>
-
-    <!-- Ақбота -->
-    <div class="p-card">
-      <div class="p-head">
-        <div class="av av-a">АБ</div>
-        <div>
-          <div class="p-name">Ақбота</div>
-          <div class="p-net red" id="net-a">−6 667 ₸ қарыз</div>
-        </div>
-      </div>
-      <div class="card-section">
-        <div class="cs-label">Кімге қарыз →</div>
-        <div class="d-row" id="a-to-r">
-          <span class="d-who"><span class="av-sm av-r">АР</span> Ардақ <span style="font-size:11px;color:#aaa;">(азық-түлік)</span></span>
-          <div class="d-right">
-            <span class="d-amt red">6 667 ₸</span>
-            <button class="pay-btn" onclick="openPay('Ақбота','Ардақ',6667,'a')">Аудардым ✓</button>
-          </div>
-        </div>
-        <div class="d-row">
-          <span class="d-who"><span class="av-sm av-u">ҰЛ</span> Ұлболсын</span>
-          <div class="d-right"><span class="d-amt gray">—</span></div>
-        </div>
-      </div>
-      <div class="card-section">
-        <div class="cs-label">Кім қарыз ←</div>
-        <div class="d-row">
-          <span class="d-who"><span class="av-sm av-u">ҰЛ</span> Ұлболсын</span>
-          <div class="d-right"><span class="d-amt gray">—</span></div>
-        </div>
-        <div class="d-row">
-          <span class="d-who"><span class="av-sm av-r">АР</span> Ардақ</span>
-          <div class="d-right"><span class="d-amt gray">—</span></div>
-        </div>
-      </div>
-      <div class="card-footer">
-        <span class="cf-label">Нетто</span>
-        <span class="cf-total red" id="total-a">−6 667 ₸</span>
-      </div>
-    </div>
-
-    <!-- Ұлболсын -->
-    <div class="p-card">
-      <div class="p-head">
-        <div class="av av-u">ҰЛ</div>
-        <div>
-          <div class="p-name">Ұлболсын</div>
-          <div class="p-net red" id="net-u">−6 667 ₸ қарыз</div>
-        </div>
-      </div>
-      <div class="card-section">
-        <div class="cs-label">Кімге қарыз →</div>
-        <div class="d-row" id="u-to-r">
-          <span class="d-who"><span class="av-sm av-r">АР</span> Ардақ <span style="font-size:11px;color:#aaa;">(азық-түлік)</span></span>
-          <div class="d-right">
-            <span class="d-amt red">6 667 ₸</span>
-            <button class="pay-btn" onclick="openPay('Ұлболсын','Ардақ',6667,'u')">Аудардым ✓</button>
-          </div>
-        </div>
-        <div class="d-row">
-          <span class="d-who"><span class="av-sm av-a">АБ</span> Ақбота</span>
-          <div class="d-right"><span class="d-amt gray">—</span></div>
-        </div>
-      </div>
-      <div class="card-section">
-        <div class="cs-label">Кім қарыз ←</div>
-        <div class="d-row">
-          <span class="d-who"><span class="av-sm av-a">АБ</span> Ақбота</span>
-          <div class="d-right"><span class="d-amt gray">—</span></div>
-        </div>
-        <div class="d-row">
-          <span class="d-who"><span class="av-sm av-r">АР</span> Ардақ</span>
-          <div class="d-right"><span class="d-amt gray">—</span></div>
-        </div>
-      </div>
-      <div class="card-footer">
-        <span class="cf-label">Нетто</span>
-        <span class="cf-total red" id="total-u">−6 667 ₸</span>
-      </div>
-    </div>
-
-    <!-- Ардақ -->
-    <div class="p-card">
-      <div class="p-head">
-        <div class="av av-r">АР</div>
-        <div>
-          <div class="p-name">Ардақ</div>
-          <div class="p-net green" id="net-r">+13 334 ₸ алуы керек</div>
-        </div>
-      </div>
-      <div class="card-section">
-        <div class="cs-label">Кімге қарыз →</div>
-        <div class="d-row">
-          <span class="d-who"><span class="av-sm av-a">АБ</span> Ақбота</span>
-          <div class="d-right"><span class="d-amt gray">—</span></div>
-        </div>
-        <div class="d-row">
-          <span class="d-who"><span class="av-sm av-u">ҰЛ</span> Ұлболсын</span>
-          <div class="d-right"><span class="d-amt gray">—</span></div>
-        </div>
-      </div>
-      <div class="card-section">
-        <div class="cs-label">Кім қарыз ←</div>
-        <div class="d-row">
-          <span class="d-who"><span class="av-sm av-a">АБ</span> Ақбота <span style="font-size:11px;color:#aaa;">(азық-түлік)</span></span>
-          <div class="d-right"><span class="d-amt green">6 667 ₸</span></div>
-        </div>
-        <div class="d-row">
-          <span class="d-who"><span class="av-sm av-u">ҰЛ</span> Ұлболсын <span style="font-size:11px;color:#aaa;">(азық-түлік)</span></span>
-          <div class="d-right"><span class="d-amt green">6 667 ₸</span></div>
-        </div>
-      </div>
-      <div class="card-footer">
-        <span class="cf-label">Нетто</span>
-        <span class="cf-total green" id="total-r">+13 334 ₸</span>
-      </div>
-    </div>
+    <div id="balance-content"><div class="loading">Жүктелуде...</div></div>
   </div>
 
-  <!-- ТАРИХ -->
   <div id="screen-history" class="screen">
-    <div class="sec-title">Барлық шығындар</div>
-    <div class="exp-item">
-      <div><div class="exp-desc">Азық-түлік</div><div class="exp-meta">Ардақ · 24 мамыр 2026</div></div>
-      <div class="exp-right"><div class="exp-amt">20 000 ₸</div><div class="exp-per">÷3 · 6 667 ₸-тан</div><span class="exp-tag tag-open">ашық</span></div>
-    </div>
-    <div class="exp-item">
-      <div><div class="exp-desc">Тұрмыстық химия</div><div class="exp-meta">Ақбота · 22 мамыр 2026</div></div>
-      <div class="exp-right"><div class="exp-amt">8 500 ₸</div><div class="exp-per">÷2 · 4 250 ₸-тан</div><span class="exp-tag tag-open">ашық</span></div>
-    </div>
-    <div class="exp-item" style="opacity:0.55;">
-      <div><div class="exp-desc">Кешкі ас</div><div class="exp-meta">Ұлболсын · 20 мамыр 2026</div></div>
-      <div class="exp-right"><div class="exp-amt">12 000 ₸</div><div class="exp-per">÷3 · 4 000 ₸-тан</div><span class="exp-tag tag-closed">жабылды ✓</span></div>
-    </div>
-    <div class="exp-item">
-      <div><div class="exp-desc">Ұлболсын ← Ақбота</div><div class="exp-meta">Қолмен · 18 мамыр 2026</div></div>
-      <div class="exp-right"><div class="exp-amt">5 000 ₸</div><div class="exp-per">тікелей қарыз</div><span class="exp-tag tag-manual">қолмен</span></div>
-    </div>
+    <div id="history-content"><div class="loading">Жүктелуде...</div></div>
   </div>
 
-  <!-- ШЫҒЫН ҚОСУ -->
   <div id="screen-add" class="screen">
     <div class="sec-title">Жаңа шығын</div>
     <div class="form-card">
       <label class="f-label">Кім төледі</label>
-      <select id="payer"><option>Ардақ</option><option>Ақбота</option><option>Ұлболсын</option></select>
+      <select id="payer">
+        <option>Ардақ</option><option>Ақбота</option><option>Ұлболсын</option>
+      </select>
       <label class="f-label">Не үшін</label>
       <input type="text" id="desc" placeholder="Азық-түлік, кешкі ас..." />
       <label class="f-label">Сумма (₸)</label>
@@ -269,11 +133,10 @@ input:focus,select:focus{outline:none;border-color:#a78bfa;}
         <button class="chip on" onclick="toggleChip(this)">Ұлболсын</button>
       </div>
       <div class="preview" id="preview">Қатысушыларды таңда және сумманы енгіз</div>
-      <button class="big-btn" onclick="addExp()">Шығын қосу</button>
+      <button class="big-btn" id="add-btn" onclick="addExpense()">Шығын қосу</button>
     </div>
   </div>
 
-  <!-- ҚОЛМЕН ҚАРЫЗ -->
   <div id="screen-manual" class="screen">
     <div class="sec-title">Қолмен қарыз жазу</div>
     <div class="form-card">
@@ -286,12 +149,11 @@ input:focus,select:focus{outline:none;border-color:#a78bfa;}
       <input type="number" id="m-amount" placeholder="5 000" />
       <label class="f-label">Сипаттама</label>
       <input type="text" id="m-desc" placeholder="Несие, дүкен..." />
-      <button class="big-btn purple" onclick="addManual()">Қарыз жазу</button>
+      <button class="big-btn purple" id="manual-btn" onclick="addManual()">Қарыз жазу</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL -->
 <div class="modal-bg" id="pay-modal">
   <div class="modal">
     <h3>Аударымды растау</h3>
@@ -306,20 +168,152 @@ input:focus,select:focus{outline:none;border-color:#a78bfa;}
 </div>
 
 <script>
-let curPay = {};
 const tg = window.Telegram && window.Telegram.WebApp;
-if (tg) {
-  tg.ready();
-  tg.expand();
-  const u = tg.initDataUnsafe && tg.initDataUnsafe.user;
-  if (u) document.getElementById('user-name').textContent = u.first_name + ' — Ордак Есеп';
+if (tg) { tg.ready(); tg.expand(); }
+
+const API = window.location.hostname === 'ghoulvon.github.io'
+  ? 'https://worker-production-475b.up.railway.app'
+  : '';
+
+const COLORS = {
+  'Ардақ':    {cls:'av-r', init:'АР'},
+  'Ақбота':   {cls:'av-a', init:'АБ'},
+  'Ұлболсын': {cls:'av-u', init:'ҰЛ'},
+};
+
+let curPay = {};
+
+async function api(path, method='GET', body=null) {
+  const opts = {method, headers:{'Content-Type':'application/json'}};
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(API + path, opts);
+  return r.json();
 }
 
-function tab(name, btn) {
+function av(name, sm=false) {
+  const c = COLORS[name] || {cls:'av-r', init:name.slice(0,2).toUpperCase()};
+  return `<span class="av${sm?'-sm':''} ${c.cls}">${c.init}</span>`;
+}
+
+function fmt(n) { return Math.round(n).toLocaleString('ru'); }
+
+async function loadBalance() {
+  const el = document.getElementById('balance-content');
+  try {
+    const data = await api('/api/balance');
+    let html = '<div class="sec-title">Жеке баланс</div>';
+    for (const [name, info] of Object.entries(data)) {
+      const netCls = info.net > 0 ? 'green' : info.net < 0 ? 'red' : 'gray';
+      const netTxt = info.net > 0 ? `+${fmt(info.net)} ₸ алуы керек`
+                   : info.net < 0 ? `−${fmt(Math.abs(info.net))} ₸ қарыз`
+                   : 'Теңестірілді ✓';
+
+      let owesRows = '';
+      for (const o of info.owes) {
+        owesRows += `<div class="d-row">
+          <span class="d-who">${av(o.to, true)} ${o.to}</span>
+          <div class="d-right">
+            <span class="d-amt red">${fmt(o.amount)} ₸</span>
+            <button class="pay-btn" onclick="openPay('${name}','${o.to}',${o.amount})">Аудардым ✓</button>
+          </div>
+        </div>`;
+      }
+      for (const other of Object.keys(COLORS)) {
+        if (other === name || info.owes.find(x=>x.to===other)) continue;
+        owesRows += `<div class="d-row">
+          <span class="d-who">${av(other,true)} ${other}</span>
+          <div class="d-right"><span class="d-amt gray">—</span></div>
+        </div>`;
+      }
+
+      let owedRows = '';
+      for (const o of info.owed_by) {
+        owedRows += `<div class="d-row">
+          <span class="d-who">${av(o.from,true)} ${o.from}</span>
+          <div class="d-right"><span class="d-amt green">${fmt(o.amount)} ₸</span></div>
+        </div>`;
+      }
+      for (const other of Object.keys(COLORS)) {
+        if (other === name || info.owed_by.find(x=>x.from===other)) continue;
+        owedRows += `<div class="d-row">
+          <span class="d-who">${av(other,true)} ${other}</span>
+          <div class="d-right"><span class="d-amt gray">—</span></div>
+        </div>`;
+      }
+
+      html += `<div class="p-card">
+        <div class="p-head">
+          ${av(name)}
+          <div>
+            <div class="p-name">${name}</div>
+            <div class="p-net ${netCls}">${netTxt}</div>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="cs-label">Кімге қарыз →</div>
+          ${owesRows || '<div class="d-row"><span style="font-size:13px;color:#ccc;">Қарыз жоқ</span></div>'}
+        </div>
+        <div class="card-section">
+          <div class="cs-label">Кім қарыз ←</div>
+          ${owedRows || '<div class="d-row"><span style="font-size:13px;color:#ccc;">Жоқ</span></div>'}
+        </div>
+        <div class="card-footer">
+          <span class="cf-label">Нетто</span>
+          <span class="cf-total ${netCls}">${info.net >= 0 ? '+' : ''}${fmt(info.net)} ₸</span>
+        </div>
+      </div>`;
+    }
+    el.innerHTML = html;
+  } catch(e) {
+    el.innerHTML = '<div class="empty">Деректерді жүктеу мүмкін болмады 😕<br><small>API қосылымын тексер</small></div>';
+  }
+}
+
+async function loadHistory() {
+  const el = document.getElementById('history-content');
+  try {
+    const items = await api('/api/history');
+    if (!items.length) { el.innerHTML = '<div class="empty">Тарих бос 📭</div>'; return; }
+    let html = '<div class="sec-title">Барлық шығындар</div>';
+    for (const item of items) {
+      if (item.type === 'expense') {
+        html += `<div class="exp-item">
+          <div>
+            <div class="exp-desc">${item.description}</div>
+            <div class="exp-meta">${item.payer} · ${item.date}</div>
+          </div>
+          <div class="exp-right">
+            <div class="exp-amt">${fmt(item.amount)} ₸</div>
+            <div class="exp-per">÷${item.split_count} · ${fmt(item.share)} ₸-тан</div>
+            <span class="exp-tag tag-open">ашық</span>
+          </div>
+        </div>`;
+      } else {
+        html += `<div class="exp-item">
+          <div>
+            <div class="exp-desc">${item.from} → ${item.to}</div>
+            <div class="exp-meta">Аударым · ${item.date}</div>
+          </div>
+          <div class="exp-right">
+            <div class="exp-amt">${fmt(item.amount)} ₸</div>
+            <span class="exp-tag ${item.confirmed ? 'tag-closed' : 'tag-pay'}">${item.confirmed ? 'расталды ✓' : 'күтілуде'}</span>
+          </div>
+        </div>`;
+      }
+    }
+    el.innerHTML = html;
+  } catch(e) {
+    el.innerHTML = '<div class="empty">Жүктеу қатесі 😕</div>';
+  }
+}
+
+function switchTab(name, btn) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
   btn.classList.add('active');
+  if (name === 'balance') loadBalance();
+  if (name === 'history') loadHistory();
 }
 
 function toggleChip(el) { el.classList.toggle('on'); calcPreview(); }
@@ -330,62 +324,78 @@ function calcPreview() {
   const el = document.getElementById('preview');
   if (amt > 0 && sel.length > 0) {
     const share = Math.round(amt / sel.length);
-    el.innerHTML = '<strong>' + amt.toLocaleString('ru') + ' ₸</strong> ÷ ' + sel.length + ' = <strong>' + share.toLocaleString('ru') + ' ₸</strong> әрқайсысынан<br><span style="color:#888;font-size:12px;">' + sel.join(', ') + '</span>';
+    el.innerHTML = `<strong>${fmt(amt)} ₸</strong> ÷ ${sel.length} = <strong>${fmt(share)} ₸</strong> әрқайсысынан<br><span style="color:#888;font-size:12px;">${sel.join(', ')}</span>`;
   } else {
     el.textContent = 'Қатысушыларды таңда және сумманы енгіз';
   }
 }
 
-function addExp() {
+async function addExpense() {
   const desc = document.getElementById('desc').value.trim();
   const amt = parseFloat(document.getElementById('amount').value);
   const payer = document.getElementById('payer').value;
-  const sel = [...document.querySelectorAll('.chip.on')];
+  const participants = [...document.querySelectorAll('.chip.on')].map(c => c.textContent);
   if (!desc || !amt) { note('Барлық өрістерді толтыр', false); return; }
-  if (!sel.length) { note('Кем дегенде бір қатысушы таңда', false); return; }
-  const share = Math.round(amt / sel.length);
-  if (tg) tg.sendData(JSON.stringify({type:'expense', payer, desc, amount:amt, participants: sel.map(c=>c.textContent)}));
-  note(payer + ' ' + amt.toLocaleString('ru') + ' ₸ жұмсады — «' + desc + '». Әрқайсысынан ' + share.toLocaleString('ru') + ' ₸.', true);
-  document.getElementById('desc').value = '';
-  document.getElementById('amount').value = '';
-  document.getElementById('preview').textContent = 'Қатысушыларды таңда және сумманы енгіз';
-  tab('balance', document.querySelector('.tab'));
+  if (!participants.length) { note('Кем дегенде бір қатысушы таңда', false); return; }
+
+  const btn = document.getElementById('add-btn');
+  btn.disabled = true; btn.textContent = 'Сақталуда...';
+  try {
+    const res = await api('/api/add_expense', 'POST', {payer, description: desc, amount: amt, participants});
+    if (res.ok) {
+      note(`${payer} ${fmt(amt)} ₸ жұмсады — «${desc}». Әрқайсысынан ${fmt(amt/participants.length)} ₸.`, true);
+      document.getElementById('desc').value = '';
+      document.getElementById('amount').value = '';
+      document.getElementById('preview').textContent = 'Қатысушыларды таңда және сумманы енгіз';
+      switchTab('balance', document.querySelector('.tab'));
+    } else {
+      note(res.error || 'Қате болды', false);
+    }
+  } catch(e) { note('Қосылым қатесі', false); }
+  btn.disabled = false; btn.textContent = 'Шығын қосу';
 }
 
-function addManual() {
+async function addManual() {
   const from = document.getElementById('m-from').value;
   const to = document.getElementById('m-to').value;
   const amt = parseFloat(document.getElementById('m-amount').value);
-  const desc = document.getElementById('m-desc').value.trim();
+  const desc = document.getElementById('m-desc').value.trim() || 'қолмен жазылған';
   if (from === to) { note('Екі түрлі адам таңда', false); return; }
   if (!amt) { note('Сумманы енгіз', false); return; }
-  if (tg) tg.sendData(JSON.stringify({type:'manual', from, to, amount:amt, desc}));
-  note(to + ' ' + from + '-ға ' + amt.toLocaleString('ru') + ' ₸ қарыз' + (desc ? ' — ' + desc : ''), true);
-  document.getElementById('m-amount').value = '';
-  document.getElementById('m-desc').value = '';
-  tab('balance', document.querySelector('.tab'));
+
+  const btn = document.getElementById('manual-btn');
+  btn.disabled = true; btn.textContent = 'Сақталуда...';
+  try {
+    const res = await api('/api/add_manual', 'POST', {from, to, amount: amt, description: desc});
+    if (res.ok) {
+      note(`${to} ${from}-ға ${fmt(amt)} ₸ қарыз — ${desc}`, true);
+      document.getElementById('m-amount').value = '';
+      document.getElementById('m-desc').value = '';
+      switchTab('balance', document.querySelector('.tab'));
+    }
+  } catch(e) { note('Қосылым қатесі', false); }
+  btn.disabled = false; btn.textContent = 'Қарыз жазу';
 }
 
-function openPay(from, to, amt, key) {
-  curPay = {from, to, amt, key};
-  document.getElementById('pay-text').textContent = from + ' ' + to + '-қа ' + amt.toLocaleString('ru') + ' ₸ аударды';
-  document.getElementById('pay-q').textContent = to + ', ақшаны алдың ба?';
+function openPay(from, to, amt) {
+  curPay = {from, to, amt};
+  document.getElementById('pay-text').textContent = `${from} ${to}-қа ${fmt(amt)} ₸ аударды`;
+  document.getElementById('pay-q').textContent = `${to}, ақшаны алдың ба?`;
   document.getElementById('pay-modal').classList.add('open');
 }
 
-function confirmPay(yes) {
+async function confirmPay(yes) {
   document.getElementById('pay-modal').classList.remove('open');
-  if (yes) {
-    if (tg) tg.sendData(JSON.stringify({type:'confirm_pay', from:curPay.from, to:curPay.to, amount:curPay.amt}));
-    note(curPay.to + ' ' + curPay.amt.toLocaleString('ru') + ' ₸ алғанын растады. Қарыз жабылды! 🎉', true);
-    const k = curPay.key;
-    document.getElementById('net-'+k).textContent = 'Теңестірілді ✓';
-    document.getElementById('net-'+k).className = 'p-net gray';
-    document.getElementById('total-'+k).textContent = '0 ₸';
-    document.getElementById('total-'+k).className = 'cf-total gray';
-  } else {
-    note('Аударым расталмады. ' + curPay.to + '-мен сөйлес.', false);
-  }
+  try {
+    const res = await api('/api/mark_paid', 'POST', {from: curPay.from, to: curPay.to, amount: curPay.amt});
+    if (res.ok && yes) {
+      await api('/api/confirm_payment', 'POST', {pay_id: res.pay_id, confirmed: true});
+      note(`${curPay.to} ${fmt(curPay.amt)} ₸ алғанын растады. Қарыз жабылды! 🎉`, true);
+      loadBalance();
+    } else if (!yes) {
+      note(`Аударым расталмады. ${curPay.to}-мен сөйлес.`, false);
+    }
+  } catch(e) { note('Қосылым қатесі', false); }
 }
 
 function note(text, ok) {
@@ -398,6 +408,8 @@ function note(text, ok) {
 document.getElementById('pay-modal').addEventListener('click', e => {
   if (e.target.id === 'pay-modal') e.target.classList.remove('open');
 });
+
+loadBalance();
 </script>
 </body>
 </html>
